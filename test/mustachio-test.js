@@ -3,9 +3,11 @@
  */
 
 var fs = require('fs'),
+    path = require('path'),
     Mustachio = require('../lib/mustachio.js');
 
 var fixtures = {
+
     emptyCompiledFunction: [
         'function (Handlebars,depth0,helpers,partials,data) {',
         '  helpers = helpers || Handlebars.helpers;',
@@ -14,10 +16,24 @@ var fixtures = {
         '',
         '  return buffer;}',
         ''
+    ].join('\n'),
+
+    emptyModuleFile: [
+        'YUI.add("template-alpha", function (Y) {',
+        '    Y.namespace("Z.Template")["alpha"] = Y.Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {',
+        '  helpers = helpers || Handlebars.helpers;',
+        '  var buffer = "", foundHelper, self=this;',
+        '',
+        '',
+        '  return buffer;});',
+        '}, "@VERSION@", { "requires": ["handlebars-base"] });',
+        ''
     ].join('\n')
+
 };
 
-module.exports = {
+exports.lifecycle = {
+
     "should instantiate with defaults when no config passed": function (test) {
         test.expect(5);
 
@@ -33,6 +49,7 @@ module.exports = {
 
         test.done();
     },
+
     "should generate simple output": function (test) {
         test.expect(2);
 
@@ -40,11 +57,79 @@ module.exports = {
             simple: true
         });
 
-        instance.invoke([__dirname + '/templates/alpha.mustache']);
+        instance.invoke(__dirname + '/templates/alpha.mustache');
 
         test.strictEqual(instance.output.length, 1, "Output array empty");
-        test.strictEqual(instance.render(), fixtures.emptyCompiledFunction, "Simple output mismatch");
+        test.strictEqual(instance.render(), fixtures.emptyCompiledFunction, "Simple output mismatch.");
 
         test.done();
     }
-};
+
+}; // end lifecycle tests
+
+exports.rendering = {
+
+    "should write single file": function (test) {
+        test.expect(3);
+
+        var filePath = path.join(__dirname, 'output', 'alpha.js');
+        var instance = new Mustachio({
+            outputFile: filePath
+        });
+
+        instance.invoke(__dirname + '/templates/alpha.mustache');
+
+        instance.renderOutput(function (err) {
+            test.ifError(err);
+
+            fs.readFile(filePath, 'utf8', function (foul, actual) {
+                test.ifError(foul);
+
+                test.strictEqual(actual, fixtures.emptyModuleFile, "Single file output mismatch.");
+
+                test.done();
+            });
+        });
+    },
+
+    "should write all files under target directory in Builder pattern": function (test) {
+        test.expect(8);
+
+        var dirsPath = path.join(__dirname, 'output');
+        var instance = new Mustachio({
+            outputDir: dirsPath
+        });
+
+        instance.invoke(__dirname + '/templates');
+
+        instance.renderOutput(function (err) {
+            test.ifError(err);
+
+            fs.readdir(dirsPath, function (foul, dirs) {
+                test.ifError(foul);
+
+                // when remaining === 0, we are done
+                var remaining = dirs.length;
+
+                dirs.forEach(function (dirName) {
+                    // construct Builder path, such as ./output/template-alpha/template-alpha.js
+                    var filePath = path.join(dirsPath, dirName, dirName + '.js');
+
+                    fs.readFile(filePath, 'utf8', function (augh, actual) {
+                        test.ifError(augh);
+
+                        var replacer = dirName.replace(instance.prefix, ''),
+                            expected = fixtures.emptyModuleFile.replace(/alpha/g, replacer);
+
+                        test.strictEqual(actual, expected, "Multiple output mismatch (" + replacer + ").");
+
+                        if (--remaining === 0) {
+                            test.done();
+                        }
+                    });
+                });
+            });
+        });
+    }
+
+}; // end rendering tests
