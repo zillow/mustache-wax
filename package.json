@@ -1,9 +1,11 @@
 {
   "name": "mustachio",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Wrap precompiled Mustache templates (using Handlebars.js) in YUI modules.",
   "main": "./lib/mustachio.js",
-  "bin": "./lib/cli.js",
+  "bin": {
+    "mustachio": "./lib/cli.js"
+  },
   "scripts": {
     "test": "nodeunit test"
   },
@@ -27,5 +29,8 @@
   },
   "devDependencies": {
     "nodeunit": "~0.7.4"
+  },
+  "engines": {
+    "node": "*"
   }
 }
