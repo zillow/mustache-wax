@@ -4,7 +4,16 @@
 
 var fs = require('fs'),
     path = require('path'),
+    existsSync = (fs.existsSync || path.existsSync),
+    rimraf = require('rimraf'),
+
+    testOutputDir = path.resolve(__dirname, 'output'),
     Mustachio = require('../lib/mustachio.js');
+
+// blow away test/output if it exists
+if (existsSync(testOutputDir)) {
+    rimraf.sync(testOutputDir);
+}
 
 var fixtures = {
 
@@ -68,6 +77,10 @@ exports.lifecycle = {
 }; // end lifecycle tests
 
 exports.rendering = {
+
+    tearDown: function (cb) {
+        rimraf(testOutputDir, cb);
+    },
 
     "should write single file": function (test) {
         test.expect(3);
