@@ -59,6 +59,33 @@ exports.lifecycle = {
         test.done();
     },
 
+    "should reject attempts to combine flags illegally": function (test) {
+        test.expect(3);
+
+        test.throws(function () {
+            this.instance = new Mustachio({
+                beautify: true,
+                min: true
+            });
+        }, /Unable to beautify minified output/);
+
+        test.throws(function () {
+            this.instance = new Mustachio({
+                simple: true,
+                min: true
+            });
+        }, /Unable to minimize simple output/);
+
+        test.throws(function () {
+            this.instance = new Mustachio({
+                simple: true,
+                beautify: true
+            });
+        }, /Unable to beautify simple output/);
+
+        test.done();
+    },
+
     "should generate simple output": function (test) {
         test.expect(2);
 
