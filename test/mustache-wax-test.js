@@ -8,7 +8,7 @@ var fs = require('fs'),
     rimraf = require('rimraf'),
 
     testOutputDir = path.resolve(__dirname, 'output'),
-    Mustachio = require('../lib/mustachio.js');
+    MustacheWax = require('../lib/mustache-wax.js');
 
 // blow away test/output if it exists
 if (existsSync(testOutputDir)) {
@@ -59,7 +59,7 @@ exports.lifecycle = {
     "should instantiate with defaults when no config passed": function (test) {
         test.expect(5);
 
-        var instance = new Mustachio();
+        var instance = new MustacheWax();
 
         test.ok(Array.isArray(instance.output), "Instance 'output' property not set.");
         test.ok('object' === typeof instance.known, "Instance 'known' property not set.");
@@ -76,21 +76,21 @@ exports.lifecycle = {
         test.expect(3);
 
         test.throws(function () {
-            this.instance = new Mustachio({
+            this.instance = new MustacheWax({
                 beautify: true,
                 min: true
             });
         }, /Unable to beautify minified output/);
 
         test.throws(function () {
-            this.instance = new Mustachio({
+            this.instance = new MustacheWax({
                 simple: true,
                 min: true
             });
         }, /Unable to minimize simple output/);
 
         test.throws(function () {
-            this.instance = new Mustachio({
+            this.instance = new MustacheWax({
                 simple: true,
                 beautify: true
             });
@@ -102,7 +102,7 @@ exports.lifecycle = {
     "should generate simple output": function (test) {
         test.expect(2);
 
-        var instance = new Mustachio({
+        var instance = new MustacheWax({
             simple: true
         });
 
@@ -126,7 +126,7 @@ exports.rendering = {
         test.expect(3);
 
         var filePath = path.join(__dirname, 'output', 'alpha.js');
-        var instance = new Mustachio({
+        var instance = new MustacheWax({
             outputFile: filePath
         });
 
@@ -149,7 +149,7 @@ exports.rendering = {
         test.expect(3);
 
         var filePath = path.join(__dirname, 'output', 'alpha.js');
-        var instance = new Mustachio({
+        var instance = new MustacheWax({
             beautify: true,
             outputFile: filePath
         });
@@ -173,7 +173,7 @@ exports.rendering = {
         test.expect(8);
 
         var dirsPath = path.join(__dirname, 'output');
-        var instance = new Mustachio({
+        var instance = new MustacheWax({
             outputDir: dirsPath
         });
 

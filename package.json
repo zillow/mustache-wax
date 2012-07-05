@@ -2,7 +2,7 @@
   "name": "mustache-wax",
   "version": "0.2.3",
   "description": "Wrap precompiled Mustache templates (using Handlebars.js) in YUI modules.",
-  "main": "./lib/mustachio.js",
+  "main": "./lib/mustache-wax.js",
   "bin": {
     "wax": "./lib/cli.js"
   },
