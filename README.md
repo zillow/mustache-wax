@@ -1,7 +1,7 @@
-Mustachio
-=========
+mustache-wax
+============
 
-This is a utility to wrap precompiled [Mustache][] templates (using [Handlebars][]) in [YUI][] modules, for ease of reuse as dependencies.
+`mustache-wax` is a utility to wrap precompiled [Mustache][] templates (using [Handlebars][]) in [YUI][] modules, for ease of reuse as dependencies.
 
 [Mustache]: http://mustache.github.com/
 [Handlebars]: http://handlebarsjs.com/
@@ -12,12 +12,14 @@ Installation
 
 Install globally via npm:
 
-    npm -g install mustachio
+    npm -g install mustache-wax
 
-Or clone the [repo](https://github.com/zillow/mustachio) and link globally:
+Or clone the [repo](https://github.com/zillow/mustache-wax) and link globally:
 
-    git clone git://github.com/zillow/mustachio.git
-    npm link mustachio
+    git clone git://github.com/zillow/mustache-wax.git
+    npm link mustache-wax
+
+The `wax` executable will now be available to do your bidding.
 
 Usage
 -----

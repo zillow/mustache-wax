@@ -1,10 +1,10 @@
 {
-  "name": "mustachio",
+  "name": "mustache-wax",
   "version": "0.2.3",
   "description": "Wrap precompiled Mustache templates (using Handlebars.js) in YUI modules.",
   "main": "./lib/mustachio.js",
   "bin": {
-    "mustachio": "./lib/cli.js"
+    "wax": "./lib/cli.js"
   },
   "scripts": {
     "test": "nodeunit test"
@@ -13,13 +13,20 @@
     "yui",
     "mustache",
     "handlebars",
+    "precompile",
     "template"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/zillow/mustachio.git"
+    "url": "git://github.com/zillow/mustache-wax.git"
   },
-  "author": "Daniel Stockman",
+  "author": {
+    "name": "Zillow",
+    "url": "http://www.zillow.com/"
+  },
+  "contributors": [
+    "Daniel Stockman <daniel.stockman@gmail.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "yui": "~3.5.1",
@@ -32,6 +39,6 @@
     "rimraf": "~2.0.2"
   },
   "engines": {
-    "node": "*"
+    "node": ">=0.4.12"
   }
 }
