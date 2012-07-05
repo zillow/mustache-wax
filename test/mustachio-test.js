@@ -37,6 +37,19 @@ var fixtures = {
         '  return buffer;});',
         '}, "@VERSION@", { "requires": ["handlebars-base"] });',
         ''
+    ].join('\n'),
+
+    emptyModuleFileBeautified: [
+        'YUI.add("template-alpha", function(Y) {',
+        '    Y.namespace("Template")["alpha"] = Y.Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {',
+        '        helpers = helpers || Handlebars.helpers;',
+        '        var buffer = "", foundHelper, self = this;',
+        '        return buffer;',
+        '    });',
+        '}, "@VERSION@", {',
+        '    requires: [ "handlebars-base" ]',
+        '});',
+        ''
     ].join('\n')
 
 };
@@ -126,6 +139,30 @@ exports.rendering = {
                 test.ifError(foul);
 
                 test.strictEqual(actual, fixtures.emptyModuleFile, "Single file output mismatch.");
+
+                test.done();
+            });
+        });
+    },
+
+    "should write single file beautified": function (test) {
+        test.expect(3);
+
+        var filePath = path.join(__dirname, 'output', 'alpha.js');
+        var instance = new Mustachio({
+            beautify: true,
+            outputFile: filePath
+        });
+
+        instance.invoke(__dirname + '/templates/alpha.mustache');
+
+        instance.renderOutput(function (err) {
+            test.ifError(err);
+
+            fs.readFile(filePath, 'utf8', function (foul, actual) {
+                test.ifError(foul);
+
+                test.strictEqual(actual, fixtures.emptyModuleFileBeautified, "Single file beautified output mismatch.");
 
                 test.done();
             });
