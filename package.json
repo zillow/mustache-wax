@@ -20,6 +20,7 @@
     "type": "git",
     "url": "git://github.com/zillow/mustache-wax.git"
   },
+  "homepage": "https://github.com/zillow/mustache-wax",
   "author": {
     "name": "Zillow",
     "url": "http://www.zillow.com/"
