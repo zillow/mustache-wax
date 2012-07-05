@@ -29,7 +29,7 @@ var fixtures = {
 
     emptyModuleFile: [
         'YUI.add("template-alpha", function (Y) {',
-        '    Y.namespace("Z.Template")["alpha"] = Y.Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {',
+        '    Y.namespace("Template")["alpha"] = Y.Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {',
         '  helpers = helpers || Handlebars.helpers;',
         '  var buffer = "", foundHelper, self=this;',
         '',
