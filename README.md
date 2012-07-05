@@ -3,9 +3,9 @@ Mustachio
 
 This is a utility to wrap precompiled [Mustache][] templates (using [Handlebars][]) in [YUI][] modules, for ease of reuse as dependencies.
 
-[Mustache](http://mustache.github.com/)
-[Handlebars](http://handlebarsjs.com/)
-[YUI](http://yuilibrary.com/)
+[Mustache]: http://mustache.github.com/
+[Handlebars]: http://handlebarsjs.com/
+[YUI]: http://yuilibrary.com/
 
 Installation
 ------------
