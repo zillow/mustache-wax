@@ -20,7 +20,7 @@
     "url": "git://github.com/zillow/mustachio.git"
   },
   "author": "Daniel Stockman",
-  "license": "BSD",
+  "license": "MIT",
   "dependencies": {
     "yui": "~3.5.1",
     "mkdirp": "~0.3.3",
