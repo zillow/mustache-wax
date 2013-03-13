@@ -7,7 +7,7 @@
     "wax": "./lib/cli.js"
   },
   "scripts": {
-    "test": "nodeunit test"
+    "test": "./node_modules/.bin/istanbul cover --print both ./node_modules/mocha/bin/_mocha"
   },
   "keywords": [
     "yui",
@@ -36,8 +36,9 @@
     "handlebars": "~1.0"
   },
   "devDependencies": {
-    "nodeunit": "~0.7.4",
-    "rimraf": "~2.0.2"
+    "istanbul": "~0.1.32",
+    "mocha": "~1.8.1",
+    "rimraf": "~2.0"
   },
   "engines": {
     "node": ">=0.4.12"

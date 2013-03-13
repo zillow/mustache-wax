@@ -1,3 +1,4 @@
+/*global describe, it, beforeEach */
 /**
  * Tests!
  */
@@ -6,6 +7,11 @@ var fs = require('fs'),
     path = require('path'),
     existsSync = (fs.existsSync || path.existsSync),
     rimraf = require('rimraf'),
+    assert = require('assert'),
+
+    inputFiles = ['alpha.mustache', 'beta.hbs', 'gamma.handlebars'],
+    inputDir   = path.join(__dirname, 'fixtures/input'),
+    fixtureOut = path.join(__dirname, 'fixtures/output'),
 
     testOutputDir = path.resolve(__dirname, 'output'),
     MustacheWax = require('../lib/mustache-wax.js');
@@ -16,197 +22,192 @@ if (existsSync(testOutputDir)) {
 }
 
 var fixtures = {
-
-    emptyCompiledFunction: [
-        'function (Handlebars,depth0,helpers,partials,data) {',
-        '  helpers = helpers || Handlebars.helpers;',
-        '  var buffer = "";',
-        '',
-        '',
-        '  return buffer;}',
-        ''
-    ].join('\n'),
-
-    emptyModuleFile: [
-        'YUI.add("template-alpha", function (Y) {',
-        '    Y.namespace("Template")["alpha"] = Y.Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {',
-        '  helpers = helpers || Handlebars.helpers;',
-        '  var buffer = "";',
-        '',
-        '',
-        '  return buffer;});',
-        '}, "@VERSION@", { "requires": ["handlebars-base"] });',
-        ''
-    ].join('\n'),
-
-    emptyModuleFileBeautified: [
-        'YUI.add("template-alpha", function(Y) {',
-        '    Y.namespace("Template")["alpha"] = Y.Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {',
-        '        helpers = helpers || Handlebars.helpers;',
-        '        var buffer = "";',
-        '        return buffer;',
-        '    });',
-        '}, "@VERSION@", {',
-        '    requires: [ "handlebars-base" ]',
-        '});',
-        ''
-    ].join('\n')
-
+    simple: {},
+    module: {},
+    beauty: {}
 };
 
-exports.lifecycle = {
+inputFiles.forEach(function (file) {
+    var jsfile = path.basename(file, path.extname(file)) + '.js';
+    fixtures.simple[file] = fs.readFileSync(path.join(fixtureOut, 'simple', jsfile), 'utf8');
+    fixtures.module[file] = fs.readFileSync(path.join(fixtureOut, 'module', jsfile), 'utf8');
+    fixtures.beauty[file] = fs.readFileSync(path.join(fixtureOut, 'beauty', jsfile), 'utf8');
+});
 
-    "should instantiate with defaults when no config passed": function (test) {
-        test.expect(5);
-
+describe("lifecycle", function () {
+    it("should instantiate with defaults when no config passed", function () {
         var instance = new MustacheWax();
 
-        test.ok(Array.isArray(instance.output), "Instance 'output' property not set.");
-        test.ok('object' === typeof instance.known, "Instance 'known' property not set.");
+        assert.ok(Array.isArray(instance.output), "Instance 'output' property not set.");
+        assert.ok('object' === typeof instance.known, "Instance 'known' property not set.");
 
-        test.strictEqual(instance.argv.modulePrefix, "template", "Incorrect modulePrefix default.");
-        test.strictEqual(instance.prefix, "template-", "Incorrect instance.prefix default.");
+        assert.strictEqual(instance.argv.modulePrefix, "template", "Incorrect modulePrefix default.");
+        assert.strictEqual(instance.prefix, "template-", "Incorrect instance.prefix default.");
 
-        test.ok(instance.pregex.test('"template-foo"'), "Prefix regular expression incorrect.");
+        assert.ok(instance.pregex.test('"template-foo"'), "Prefix regular expression incorrect.");
+    });
 
-        test.done();
-    },
-
-    "should reject attempts to combine flags illegally": function (test) {
-        test.expect(3);
-
-        test.throws(function () {
+    it("should reject attempts to combine flags illegally", function () {
+        assert.throws(function () {
             this.instance = new MustacheWax({
                 beautify: true,
                 min: true
             });
-        }, /Unable to beautify minified output/);
+        }, "Unable to beautify minified output");
 
-        test.throws(function () {
+        assert.throws(function () {
             this.instance = new MustacheWax({
                 simple: true,
                 min: true
             });
-        }, /Unable to minimize simple output/);
+        }, "Unable to minimize simple output");
 
-        test.throws(function () {
+        assert.throws(function () {
             this.instance = new MustacheWax({
                 simple: true,
                 beautify: true
             });
-        }, /Unable to beautify simple output/);
+        }, "Unable to beautify simple output");
+    });
 
-        test.done();
-    },
+    it("should reject improper _ parameters", function () {
+        /*jshint nonew: false */
 
-    "should generate simple output": function (test) {
-        test.expect(2);
+        assert.throws(function () {
+            new MustacheWax({
+                "_": ""
+            });
+        }, "Must define at least one template or directory.");
 
+        assert.throws(function () {
+            new MustacheWax({
+                "_": "poopypants"
+            });
+        }, 'Unable to open template file "poopypants"');
+
+        assert.throws(function () {
+            new MustacheWax({
+                simple: true,
+                "_": [
+                    path.join(inputDir, inputFiles[0]),
+                    path.join(inputDir, inputFiles[1])
+                ]
+            });
+        }, "Unable to output multiple templates in simple mode");
+    });
+
+    it("should accept a string _ parameter", function () {
+        /*jshint nonew: false */
+        assert.doesNotThrow(function () {
+            new MustacheWax({
+                "_": path.join(inputDir, inputFiles[0])
+            });
+        });
+    });
+});
+
+describe("simple config", function () {
+    it("should generate simple output", function () {
         var instance = new MustacheWax({
             simple: true
         });
+        var inputFile = inputFiles[0]; // alpha
 
-        instance.invoke(__dirname + '/templates/alpha.mustache');
+        instance.invoke(path.join(inputDir, inputFile));
 
-        test.strictEqual(instance.output.length, 1, "Output array empty");
-        test.strictEqual(instance.render(), fixtures.emptyCompiledFunction, "Simple output mismatch.");
+        assert.strictEqual(instance.output.length, 1, "Output array empty");
+        assert.strictEqual(instance.render(), fixtures.simple[inputFile]);
+    });
+});
 
-        test.done();
-    }
+describe("rendering", function () {
+    beforeEach(function (done) {
+        rimraf(testOutputDir, done);
+    });
 
-}; // end lifecycle tests
-
-exports.rendering = {
-
-    tearDown: function (cb) {
-        rimraf(testOutputDir, cb);
-    },
-
-    "should write single file": function (test) {
-        test.expect(3);
-
+    it("should write single file", function (done) {
         var filePath = path.join(__dirname, 'output', 'alpha.js');
         var instance = new MustacheWax({
             outputFile: filePath
         });
+        var inputFile = inputFiles[0]; // alpha
 
-        instance.invoke(__dirname + '/templates/alpha.mustache');
+        instance.invoke(path.join(inputDir, inputFile));
 
         instance.renderOutput(function (err) {
-            test.ifError(err);
+            assert.ifError(err);
 
             fs.readFile(filePath, 'utf8', function (foul, actual) {
-                test.ifError(foul);
+                assert.ifError(foul);
 
-                test.strictEqual(actual, fixtures.emptyModuleFile, "Single file output mismatch.");
+                assert.strictEqual(actual, fixtures.module[inputFile]);
 
-                test.done();
+                done();
             });
         });
-    },
+    });
 
-    "should write single file beautified": function (test) {
-        test.expect(3);
-
+    it("should write single file beautified", function (done) {
         var filePath = path.join(__dirname, 'output', 'alpha.js');
         var instance = new MustacheWax({
             beautify: true,
             outputFile: filePath
         });
+        var inputFile = inputFiles[0]; // alpha
 
-        instance.invoke(__dirname + '/templates/alpha.mustache');
+        instance.invoke(path.join(inputDir, inputFile));
 
         instance.renderOutput(function (err) {
-            test.ifError(err);
+            assert.ifError(err);
 
             fs.readFile(filePath, 'utf8', function (foul, actual) {
-                test.ifError(foul);
+                assert.ifError(foul);
 
-                test.strictEqual(actual, fixtures.emptyModuleFileBeautified, "Single file beautified output mismatch.");
+                assert.strictEqual(actual, fixtures.beauty[inputFile]);
 
-                test.done();
+                done();
             });
         });
-    },
+    });
 
-    "should write all files under target directory in Builder pattern": function (test) {
-        test.expect(8);
-
+    it("should write all files under target directory in Builder pattern", function (done) {
         var dirsPath = path.join(__dirname, 'output');
         var instance = new MustacheWax({
+            quiet: true,
             outputDir: dirsPath
         });
 
-        instance.invoke(__dirname + '/templates');
+        instance.invoke(inputDir);
 
         instance.renderOutput(function (err) {
-            test.ifError(err);
+            assert.ifError(err);
 
             fs.readdir(dirsPath, function (foul, dirs) {
-                test.ifError(foul);
+                assert.ifError(foul);
 
                 // when remaining === 0, we are done
                 var remaining = dirs.length;
 
-                dirs.forEach(function (dirName) {
+                dirs.forEach(function (dirName, i) {
                     // construct Builder path, such as ./output/template-alpha/template-alpha.js
+                    var inputFile = inputFiles[i];
                     var filePath = path.join(dirsPath, dirName, dirName + '.js');
 
                     fs.readFile(filePath, 'utf8', function (augh, actual) {
-                        test.ifError(augh);
+                        assert.ifError(augh);
 
-                        var replacer = dirName.replace(instance.prefix, ''),
-                            expected = fixtures.emptyModuleFile.replace(/alpha/g, replacer);
+                        var expected = fixtures.module[inputFile];
 
-                        test.strictEqual(actual, expected, "Multiple output mismatch (" + replacer + ").");
+                        assert.strictEqual(actual, expected);
 
                         if (--remaining === 0) {
-                            test.done();
+                            done();
                         }
                     });
                 });
             });
         });
-    }
+    });
 
-}; // end rendering tests
+    // end rendering tests
+});
