@@ -104,6 +104,15 @@ describe("lifecycle", function () {
             });
         });
     });
+
+    it("should not checkFiles if fromCli", function () {
+        /*jshint nonew: false */
+        assert.doesNotThrow(function () {
+            new MustacheWax({
+                "_": [path.join(inputDir, inputFiles[0])]
+            }, true);
+        });
+    });
 });
 
 describe("simple config", function () {
