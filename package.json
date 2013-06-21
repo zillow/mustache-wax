@@ -36,9 +36,9 @@
     "handlebars": "~1.0"
   },
   "devDependencies": {
-    "istanbul": "~0.1.32",
-    "mocha": "~1.8.1",
-    "rimraf": "~2.0"
+    "istanbul": "~0.1.37",
+    "mocha": "~1.11.0",
+    "rimraf": "~2.1.4"
   },
   "engines": {
     "node": ">=0.8.x"
