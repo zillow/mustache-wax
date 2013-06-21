@@ -1,7 +1,7 @@
 YUI.add("template-beta", function (Y) {
     Y.namespace("Template")["beta"] = Y.Handlebars.template(function (Handlebars, depth0, helpers, partials, data) {
-        this.compilerInfo = [ 2, ">= 1.0.0-rc.3" ];
-        helpers = helpers || Handlebars.helpers;
+        this.compilerInfo = [ 4, ">= 1.0.0" ];
+        helpers = this.merge(helpers, Handlebars.helpers);
         data = data || {};
         var buffer = "", stack1, functionType = "function", escapeExpression = this.escapeExpression;
         if (stack1 = helpers.beta) {
