@@ -44,6 +44,9 @@ describe("lifecycle", function () {
         assert.strictEqual(instance.argv.modulePrefix, "template", "Incorrect modulePrefix default.");
         assert.strictEqual(instance.prefix, "template-", "Incorrect instance.prefix default.");
 
+        // $martin - testing simple string
+        assert.strictEqual(instance.argv.templateEngine, "handlebars", "Incorrect template engine");
+
         assert.ok(instance.pregex.test('"template-foo"'), "Prefix regular expression incorrect.");
     });
 
@@ -112,6 +115,16 @@ describe("lifecycle", function () {
                 "_": [path.join(inputDir, inputFiles[0])]
             }, true);
         });
+    });
+
+    it("should load default template engine", function () {
+        var instance = new MustacheWax();
+
+        //assert.ok(typeof instance.engine === )
+    });
+
+    it("should load hogan template engine", function () {
+
     });
 });
 
