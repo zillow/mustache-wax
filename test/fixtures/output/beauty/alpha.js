@@ -1,20 +1,16 @@
 YUI.add("template-alpha", function (Y) {
-    Y.namespace("Template")["alpha"] = Y.Handlebars.template(function (Handlebars, depth0, helpers, partials, data) {
-        this.compilerInfo = [ 4, ">= 1.0.0" ];
-        helpers = this.merge(helpers, Handlebars.helpers);
-        data = data || {};
-        var buffer = "", stack1, functionType = "function", escapeExpression = this.escapeExpression;
-        if (stack1 = helpers.alpha) {
-            stack1 = stack1.call(depth0, {
+    Y.namespace("Template")["alpha"] = Y.Handlebars.template({
+        compiler: [ 6, ">= 2.0.0-beta.1" ],
+        main: function (depth0, helpers, partials, data) {
+            var helper, functionType = "function", helperMissing = helpers.helperMissing, escapeExpression = this.escapeExpression;
+            return escapeExpression((helper = (helper = helpers.alpha || (depth0 != null ? depth0.alpha : depth0)) != null ? helper : helperMissing, 
+            typeof helper === functionType ? helper.call(depth0, {
+                name: "alpha",
                 hash: {},
                 data: data
-            });
-        } else {
-            stack1 = depth0.alpha;
-            stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
-        }
-        buffer += escapeExpression(stack1) + "\n";
-        return buffer;
+            }) : helper)) + "\n";
+        },
+        useData: true
     });
 }, "@VERSION@", {
     requires: [ "handlebars-base" ]
