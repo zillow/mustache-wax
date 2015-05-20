@@ -139,6 +139,7 @@ describe("rendering", function () {
         var instance = new MustacheWax({
             outputFile: filePath
         });
+
         var inputFile = inputFiles[0]; // alpha
 
         instance.invoke(path.join(inputDir, inputFile));
