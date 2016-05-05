@@ -24,6 +24,7 @@ if (existsSync(testOutputDir)) {
 var fixtures = {
     simple: {},
     module: {},
+    esmodule: {},
     beauty: {}
 };
 
@@ -31,6 +32,7 @@ inputFiles.forEach(function (file) {
     var jsfile = path.basename(file, path.extname(file)) + '.js';
     fixtures.simple[file] = fs.readFileSync(path.join(fixtureOut, 'simple', jsfile), 'utf8');
     fixtures.module[file] = fs.readFileSync(path.join(fixtureOut, 'module', jsfile), 'utf8');
+    fixtures.esmodule[file] = fs.readFileSync(path.join(fixtureOut, 'esmodule', jsfile), 'utf8');
     fixtures.beauty[file] = fs.readFileSync(path.join(fixtureOut, 'beauty', jsfile), 'utf8');
 });
 
@@ -219,5 +221,44 @@ describe("rendering", function () {
         });
     });
 
+    it("should write all files under target directory in Builder pattern for esmodule format", function (done) {
+        var dirsPath = path.join(__dirname, 'output');
+        var instance = new MustacheWax({
+            quiet: true,
+            outputDir: dirsPath,
+            moduleTemplate: './templates/esmodule.js'
+        });
+
+        instance.invoke(inputDir);
+
+        instance.renderOutput(function (err) {
+            assert.ifError(err);
+
+            fs.readdir(dirsPath, function (foul, dirs) {
+                assert.ifError(foul);
+
+                // when remaining === 0, we are done
+                var remaining = dirs.length;
+
+                dirs.forEach(function (dirName, i) {
+                    // construct Builder path, such as ./output/template-alpha/template-alpha.js
+                    var inputFile = inputFiles[i];
+                    var filePath = path.join(dirsPath, dirName, dirName + '.js');
+
+                    fs.readFile(filePath, 'utf8', function (augh, actual) {
+                        assert.ifError(augh);
+
+                        var expected = fixtures.esmodule[inputFile];
+
+                        assert.strictEqual(actual, expected);
+
+                        if (--remaining === 0) {
+                            done();
+                        }
+                    });
+                });
+            });
+        });
+    });
     // end rendering tests
 });
